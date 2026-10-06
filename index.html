@@ -1,0 +1,1853 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="theme-color" content="#050816">
+<meta name="description" content="NEXUS Advanced College Management System — student records, attendance, marks, notices, fees & recovery">
+<title>NEXUS Advanced | College Management System</title>
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>◈</text></svg>">
+<style>
+:root{
+  --bg:#050816;--panel:#0b1224;--panel2:#101a31;--line:#233252;--text:#eaf2ff;--muted:#8da0c2;
+  --cyan:#28d7ff;--purple:#8b5cf6;--green:#35e08b;--red:#ff5d73;--yellow:#ffd166;--orange:#ff9f43;
+  --radius:14px;--shadow:0 20px 70px #0005;
+}
+*{box-sizing:border-box}html{-webkit-text-size-adjust:100%}
+body{margin:0;font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;background:radial-gradient(ellipse at 15% 0%,#17235c 0%,#050816 42%),#050816;color:var(--text);min-height:100vh;overflow-x:hidden}
+button,input,select,textarea{font:inherit}button{cursor:pointer}
+button:disabled{opacity:.55;cursor:not-allowed}
+input,select,textarea{color-scheme:dark}
+
+/* Top bar */
+.top{height:64px;border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;padding:0 22px;background:#050816cc;backdrop-filter:blur(18px);position:sticky;top:0;z-index:50}
+.logo{font-weight:900;letter-spacing:2.5px;color:var(--cyan);font-size:18px}.logo span{color:#fff;font-weight:700}
+.status{font-size:11px;color:var(--green);display:flex;gap:6px;align-items:center;letter-spacing:.5px}
+.dot{width:7px;height:7px;border-radius:50%;background:var(--green);box-shadow:0 0 12px var(--green);animation:pulse 2s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.45}}
+
+/* Layout */
+.container{max-width:1180px;margin:auto;padding:36px 18px}
+.hero{text-align:center;padding:36px 0 28px}
+.eyebrow{color:var(--cyan);letter-spacing:3px;font-size:11px;font-weight:700}
+.hero h1{font-size:clamp(32px,5.5vw,62px);margin:10px 0;background:linear-gradient(90deg,#fff,var(--cyan),#a78bfa);-webkit-background-clip:text;background-clip:text;color:transparent}
+.hero p{color:var(--muted);max-width:640px;margin:auto;line-height:1.65;font-size:15px}
+.cards{display:grid;grid-template-columns:repeat(2,1fr);gap:18px;max-width:860px;margin:28px auto}
+.card{background:linear-gradient(145deg,#0e1730ee,#080e20ee);border:1px solid var(--line);border-radius:20px;padding:26px;transition:.22s;box-shadow:var(--shadow)}
+.card:hover{transform:translateY(-4px);border-color:#31558e;box-shadow:0 22px 80px #1c8fff18}
+.icon{font-size:36px;line-height:1}.card h2{margin:12px 0 6px;font-size:20px}.card p{color:var(--muted);line-height:1.55;font-size:14px;margin:0 0 16px}
+
+/* Buttons */
+.btn{border:0;border-radius:11px;padding:11px 16px;color:#03101a;background:linear-gradient(90deg,var(--cyan),#75efff);font-weight:800;font-size:13px;transition:.15s}
+.btn:hover{filter:brightness(1.08)}.btn:active{transform:scale(.98)}
+.btn.secondary{background:#18233d;color:#dbe9ff;border:1px solid var(--line)}
+.btn.danger{background:#361521;color:#ff9cac;border:1px solid #673040}
+.btn.green{background:#123326;color:#75f0af;border:1px solid #245d43}
+.btn.purple{background:#2a1a4a;color:#c4b5fd;border:1px solid #5b3d9a}
+.btn.orange{background:#3a2a12;color:#ffd166;border:1px solid #6b4e1a}
+.btn.sm{padding:7px 11px;font-size:12px;border-radius:9px}
+.btn.ghost{background:transparent;color:var(--muted);border:1px solid transparent}
+.btn.ghost:hover{color:var(--text);border-color:var(--line)}
+
+/* Forms */
+.hidden{display:none!important}
+.screen{min-height:calc(100vh - 64px)}
+.login{max-width:420px;margin:50px auto}
+.panel{background:#0a1226f0;border:1px solid var(--line);border-radius:20px;padding:26px;box-shadow:0 25px 90px #0008}
+.panel h2{margin:0 0 6px;font-size:22px}
+.panel > p{color:var(--muted);font-size:14px;margin:0 0 16px}
+.field{margin:12px 0}
+.field label{display:block;color:#a9b8d4;font-size:12px;margin-bottom:6px;font-weight:600;letter-spacing:.3px}
+.field input,.field select,.field textarea{width:100%;padding:12px 13px;border-radius:10px;border:1px solid var(--line);background:#070d1d;color:white;outline:none;transition:.15s}
+.field input:focus,.field select:focus,.field textarea:focus{border-color:var(--cyan);box-shadow:0 0 0 3px #28d7ff18}
+.field textarea{min-height:80px;resize:vertical}
+.row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.actions{display:flex;gap:9px;flex-wrap:wrap;margin-top:16px;align-items:center}
+.msg{font-size:13px;color:var(--red);min-height:18px;margin-top:8px}
+.msg.ok{color:var(--green)}
+.hint{font-size:12px;color:#657793;margin-top:14px}
+
+/* Dashboard */
+.dashboard{display:grid;grid-template-columns:220px 1fr;min-height:calc(100vh - 64px)}
+.side{border-right:1px solid var(--line);padding:18px 14px;background:#060c1b;display:flex;flex-direction:column;gap:2px}
+.side .nav-label{font-size:10px;color:#5a6d8c;letter-spacing:1.5px;padding:12px 10px 6px;font-weight:700}
+.side button{width:100%;text-align:left;background:transparent;color:#9fb0ce;border:0;padding:11px 12px;border-radius:10px;font-size:13px;display:flex;align-items:center;gap:8px}
+.side button.active,.side button:hover{background:#12203b;color:#fff}
+.side .logout-wrap{margin-top:auto;padding-top:12px;border-top:1px solid var(--line)}
+.main{padding:24px 22px;overflow:auto}
+.titlebar{display:flex;justify-content:space-between;gap:12px;align-items:flex-start;margin-bottom:18px;flex-wrap:wrap}
+.titlebar h2{margin:0;font-size:22px}
+.titlebar small{color:var(--muted);font-size:13px}
+
+/* Stats */
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
+.stat{padding:16px;border:1px solid var(--line);border-radius:14px;background:#0b1429;position:relative;overflow:hidden}
+.stat small{color:var(--muted);font-size:11px;font-weight:600;letter-spacing:.4px}
+.stat b{display:block;font-size:26px;margin-top:6px;font-weight:800}
+.stat .trend{font-size:11px;color:var(--green);margin-top:4px}
+
+/* Tables & tools */
+.toolbar{display:flex;gap:9px;flex-wrap:wrap;margin:16px 0;align-items:center}
+.toolbar input,.toolbar select{padding:10px 12px;border-radius:10px;border:1px solid var(--line);background:#070d1d;color:white;min-height:42px}
+.toolbar input{flex:1;min-width:160px}
+.tablewrap{overflow:auto;border:1px solid var(--line);border-radius:14px;background:#080f1f}
+.table{width:100%;border-collapse:collapse;min-width:780px}
+.table th,.table td{padding:11px 12px;border-bottom:1px solid #182641;text-align:left;font-size:13px;vertical-align:middle}
+.table th{color:#8fa7cc;background:#0b1428;font-weight:600;position:sticky;top:0;white-space:nowrap}
+.table tr:hover td{background:#0d1830}
+.table .actions-cell{white-space:nowrap}
+.badge{padding:4px 9px;border-radius:20px;font-size:11px;font-weight:700;display:inline-block}
+.badge.active{background:#103424;color:#71efaa}
+.badge.blocked{background:#3a1520;color:#ff8fa0}
+.badge.paid{background:#103424;color:#71efaa}
+.badge.pending{background:#3a2e10;color:#ffd166}
+.badge.overdue{background:#3a1520;color:#ff8fa0}
+.badge.draft{background:#1a2035;color:#9fb0ce}
+.empty{text-align:center;padding:40px 20px;color:var(--muted)}
+
+/* Modal */
+.modal{position:fixed;inset:0;background:#000a;display:grid;place-items:center;padding:16px;z-index:100;backdrop-filter:blur(4px)}
+.modal .panel{width:min(640px,100%);max-height:90vh;overflow:auto}
+.modal-lg .panel{width:min(780px,100%)}
+
+/* Sections */
+.section{display:none}.section.active{display:block}
+.studentbox{max-width:820px;margin:20px auto}
+.notice-box{padding:12px 14px;background:#0e1c35;border:1px solid #263e66;border-radius:12px;color:#b9cae8;margin:12px 0;font-size:13px;line-height:1.5}
+.notice-card{background:#0b1429;border:1px solid var(--line);border-radius:14px;padding:16px;margin-bottom:12px}
+.notice-card h4{margin:0 0 6px;font-size:15px}.notice-card p{margin:0;color:var(--muted);font-size:13px;line-height:1.5}
+.notice-card .meta{font-size:11px;color:#6b7f9e;margin-top:8px}
+
+/* Progress / completeness */
+.progress-bar{height:8px;background:#12203b;border-radius:99px;overflow:hidden;margin-top:8px}
+.progress-bar > i{display:block;height:100%;background:linear-gradient(90deg,var(--cyan),var(--purple));border-radius:99px;transition:width .3s}
+
+/* Toasts */
+#toastHost{position:fixed;bottom:20px;right:20px;z-index:200;display:flex;flex-direction:column;gap:8px;max-width:360px;pointer-events:none}
+.toast{pointer-events:auto;background:#0e1a32;border:1px solid var(--line);border-left:3px solid var(--cyan);border-radius:12px;padding:12px 16px;box-shadow:0 12px 40px #0008;font-size:13px;animation:slideIn .25s ease;display:flex;gap:10px;align-items:flex-start}
+.toast.ok{border-left-color:var(--green)}.toast.err{border-left-color:var(--red)}.toast.warn{border-left-color:var(--yellow)}
+@keyframes slideIn{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none}}
+
+/* Tabs inside student view */
+.tabs{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:16px;border-bottom:1px solid var(--line);padding-bottom:10px}
+.tabs button{background:#12203b;border:1px solid var(--line);color:#9fb0ce;padding:8px 14px;border-radius:9px;font-size:12px;font-weight:600}
+.tabs button.active{background:linear-gradient(90deg,#1a3a5c,#2a1a4a);color:#fff;border-color:#3d5a8a}
+
+/* Activity log */
+.log-item{display:flex;gap:12px;padding:10px 0;border-bottom:1px solid #182641;font-size:13px}
+.log-item .time{color:#6b7f9e;font-size:11px;min-width:110px;flex-shrink:0}
+.log-item .act{color:var(--text)}
+
+/* Fee / marks helpers */
+.grid-2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.mini-card{background:#0b1429;border:1px solid var(--line);border-radius:12px;padding:14px}
+
+.footer{text-align:center;color:#61718e;padding:22px;font-size:12px}
+
+/* Responsive */
+@media(max-width:900px){
+  .cards{grid-template-columns:1fr}
+  .dashboard{grid-template-columns:1fr}
+  .side{border-right:0;border-bottom:1px solid var(--line);flex-direction:row;flex-wrap:wrap;overflow:auto;padding:10px;gap:4px}
+  .side .nav-label,.side .logout-wrap{display:none}
+  .side button{width:auto;white-space:nowrap;padding:9px 12px}
+  .stats{grid-template-columns:1fr 1fr}
+  .row,.grid-2{grid-template-columns:1fr}
+  .main{padding:16px 12px}
+  .top{padding:0 14px;height:56px}
+  .logo{font-size:15px}
+}
+@media(max-width:480px){
+  .stats{grid-template-columns:1fr}
+  .toolbar input{min-width:100%}
+  button,input,select{min-height:44px}
+}
+</style>
+</head>
+<body>
+<header class="top">
+  <div class="logo">NEXUS<span>/ADV</span></div>
+  <div class="status"><i class="dot"></i> <span id="sysStatus">ONLINE • LOCAL DB</span></div>
+</header>
+
+<!-- HOME -->
+<div id="home" class="screen">
+  <div class="container">
+    <section class="hero">
+      <div class="eyebrow">ADVANCED CAMPUS PLATFORM</div>
+      <h1>College Management System</h1>
+      <p>Full-featured academic portal with student records, attendance, marks, notices, fee tracking, activity log and multi-layer data recovery. Designed for reliable demos and real workflow practice.</p>
+    </section>
+    <div class="cards">
+      <div class="card">
+        <div class="icon">◈</div>
+        <h2>Faculty Portal</h2>
+        <p>Command center for students, courses, attendance, results, fees, notices, backups and system settings.</p>
+        <button class="btn" onclick="show('teacherLogin')">Enter Faculty Portal →</button>
+      </div>
+      <div class="card">
+        <div class="icon">◇</div>
+        <h2>Student Portal</h2>
+        <p>Sign in or create an account. View profile, attendance, marks, notices and fee status. Update personal details.</p>
+        <button class="btn secondary" onclick="show('studentLogin')">Enter Student Portal →</button>
+      </div>
+    </div>
+    <div class="footer">NEXUS Advanced CMS • Offline-first • Data Recovery Built-in • BCA / Academic Project</div>
+  </div>
+</div>
+
+<!-- FACULTY LOGIN -->
+<div id="teacherLogin" class="screen hidden">
+  <div class="container">
+    <div class="login panel">
+      <h2>Faculty Authentication</h2>
+      <p>Enter the administrator password to access the faculty console.</p>
+      <div class="field"><label>ADMIN PASSWORD</label><input id="adminPass" type="password" placeholder="Enter password" autocomplete="current-password" onkeydown="if(event.key==='Enter')teacherAuth()"></div>
+      <div class="msg" id="adminMsg"></div>
+      <div class="actions">
+        <button class="btn" onclick="teacherAuth()">Authenticate</button>
+        <button class="btn secondary" onclick="show('home')">Back</button>
+      </div>
+      <p class="hint">Contact the system administrator for access credentials. Change the password after first login under Settings.</p>
+    </div>
+  </div>
+</div>
+
+<!-- STUDENT LOGIN / SIGN UP -->
+<div id="studentLogin" class="screen hidden">
+  <div class="container">
+    <div class="login panel" style="max-width:460px">
+      <h2>Student Portal</h2>
+      <div class="tabs" style="margin:12px 0 16px;border:0;padding:0">
+        <button type="button" class="active" id="tabBtnSignIn" onclick="switchStudentAuth('signin')">Sign In</button>
+        <button type="button" id="tabBtnSignUp" onclick="switchStudentAuth('signup')">Sign Up</button>
+      </div>
+
+      <!-- SIGN IN -->
+      <div id="stuAuthSignIn">
+        <p style="color:var(--muted);font-size:14px;margin:0 0 14px">Sign in with your registration number and password.</p>
+        <div class="field"><label>REGISTRATION NUMBER</label><input id="siReg" placeholder="e.g. NEXUS2026001" autocomplete="username" onkeydown="if(event.key==='Enter')studentSignIn()"></div>
+        <div class="field"><label>PASSWORD</label><input id="siPass" type="password" placeholder="Enter password" autocomplete="current-password" onkeydown="if(event.key==='Enter')studentSignIn()"></div>
+        <div class="msg" id="siMsg"></div>
+        <div class="actions">
+          <button class="btn" onclick="studentSignIn()">Sign In</button>
+          <button class="btn secondary" onclick="show('home')">Back</button>
+        </div>
+        <p class="hint">New student? Switch to <b style="color:#cbd8ef;cursor:pointer" onclick="switchStudentAuth('signup')">Sign Up</b>.</p>
+      </div>
+
+      <!-- SIGN UP -->
+      <div id="stuAuthSignUp" class="hidden">
+        <p style="color:var(--muted);font-size:14px;margin:0 0 14px">Create your student account. Faculty can also add you from the admin panel.</p>
+        <div class="field"><label>REGISTRATION NUMBER *</label><input id="suReg" placeholder="e.g. NEXUS2026001" autocomplete="username"></div>
+        <div class="field"><label>FULL NAME *</label><input id="suName" placeholder="Your full name" autocomplete="name"></div>
+        <div class="row">
+          <div class="field"><label>COURSE *</label><select id="suCourse"></select></div>
+          <div class="field"><label>SEMESTER *</label><select id="suSem"></select></div>
+        </div>
+        <div class="field"><label>EMAIL</label><input id="suEmail" type="email" placeholder="optional@college.edu" autocomplete="email"></div>
+        <div class="field"><label>PASSWORD *</label><input id="suPass" type="password" placeholder="Min 4 characters" autocomplete="new-password"></div>
+        <div class="field"><label>CONFIRM PASSWORD *</label><input id="suPass2" type="password" placeholder="Re-enter password" autocomplete="new-password" onkeydown="if(event.key==='Enter')studentSignUp()"></div>
+        <div class="msg" id="suMsg"></div>
+        <div class="actions">
+          <button class="btn" onclick="studentSignUp()">Create Account</button>
+          <button class="btn secondary" onclick="show('home')">Back</button>
+        </div>
+        <p class="hint">Already registered? Switch to <b style="color:#cbd8ef;cursor:pointer" onclick="switchStudentAuth('signin')">Sign In</b>.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- FACULTY DASHBOARD -->
+<div id="teacherDash" class="hidden">
+  <div class="dashboard">
+    <aside class="side">
+      <div class="nav-label">MAIN</div>
+      <button class="active" data-sec="overview" onclick="section('overview',this)">▣ Overview</button>
+      <button data-sec="students" onclick="section('students',this)">◎ Students</button>
+      <button data-sec="attendance" onclick="section('attendance',this)">◉ Attendance</button>
+      <button data-sec="marks" onclick="section('marks',this)">▦ Marks</button>
+      <button data-sec="fees" onclick="section('fees',this)">◈ Fees</button>
+      <button data-sec="notices" onclick="section('notices',this)">◇ Notices</button>
+      <div class="nav-label">SYSTEM</div>
+      <button data-sec="courses" onclick="section('courses',this)">▦ Courses</button>
+      <button data-sec="activity" onclick="section('activity',this)">◎ Activity Log</button>
+      <button data-sec="backup" onclick="section('backup',this)">◉ Data Recovery</button>
+      <button data-sec="settings" onclick="section('settings',this)">⚙ Settings</button>
+      <div class="logout-wrap">
+        <button class="btn secondary" style="width:100%;justify-content:center" onclick="logout()">Sign Out</button>
+      </div>
+    </aside>
+    <main class="main">
+      <!-- Overview -->
+      <section id="overview" class="section active">
+        <div class="titlebar">
+          <div><h2>Faculty Command Center</h2><small>Live academic administration console</small></div>
+          <div class="actions">
+            <button class="btn" onclick="openAdd()">+ Add Student</button>
+            <button class="btn secondary" onclick="seedDemoData()">Load Demo Data</button>
+          </div>
+        </div>
+        <div class="stats" id="statGrid"></div>
+        <div class="notice-box" style="margin-top:18px" id="overviewHint">
+          Data is stored in this browser (localStorage + recovery layer). Use <b>Data Recovery</b> regularly to download backups. For shared multi-user use, connect a backend (Firebase / Supabase).
+        </div>
+        <h3 style="margin:22px 0 10px;font-size:15px;color:var(--muted)">Recent activity</h3>
+        <div id="recentLog" class="tablewrap" style="padding:8px 14px;min-height:80px"></div>
+      </section>
+
+      <!-- Students -->
+      <section id="students" class="section">
+        <div class="titlebar">
+          <div><h2>Student Records</h2><small>Search, filter, edit, block or export</small></div>
+          <button class="btn" onclick="openAdd()">+ Add Student</button>
+        </div>
+        <div class="toolbar">
+          <input id="searchBox" placeholder="Search name, reg, roll, email, phone…" oninput="refreshStudents()">
+          <select id="filterCourse" onchange="refreshStudents()"><option value="">All courses</option></select>
+          <select id="filterSem" onchange="refreshStudents()"><option value="">All semesters</option></select>
+          <select id="filterStatus" onchange="refreshStudents()">
+            <option value="">All status</option>
+            <option value="active">Active</option>
+            <option value="blocked">Blocked</option>
+          </select>
+          <button class="btn secondary sm" onclick="exportCSV()">Export CSV</button>
+          <button class="btn secondary sm" onclick="document.getElementById('csvImport').click()">Import CSV</button>
+          <input type="file" id="csvImport" accept=".csv,text/csv" class="hidden" onchange="importCSV(this)">
+        </div>
+        <div class="tablewrap"><table class="table"><thead>
+          <tr><th>Reg No</th><th>Name</th><th>Course</th><th>Sem</th><th>Contact</th><th>Status</th><th>Actions</th></tr>
+        </thead><tbody id="studentTable"></tbody></table></div>
+      </section>
+
+      <!-- Attendance -->
+      <section id="attendance" class="section">
+        <div class="titlebar">
+          <div><h2>Attendance</h2><small>Mark daily attendance by course & semester</small></div>
+        </div>
+        <div class="toolbar">
+          <select id="attCourse" onchange="loadAttendanceSheet()"></select>
+          <select id="attSem" onchange="loadAttendanceSheet()"></select>
+          <input type="date" id="attDate" onchange="loadAttendanceSheet()">
+          <button class="btn green sm" onclick="saveAttendanceSheet()">Save Attendance</button>
+          <button class="btn secondary sm" onclick="markAllPresent()">Mark All Present</button>
+        </div>
+        <div class="tablewrap"><table class="table"><thead>
+          <tr><th>Reg No</th><th>Name</th><th>Present</th><th>% Overall</th></tr>
+        </thead><tbody id="attTable"></tbody></table></div>
+        <p class="hint" id="attHint"></p>
+      </section>
+
+      <!-- Marks -->
+      <section id="marks" class="section">
+        <div class="titlebar">
+          <div><h2>Marks / Results</h2><small>Enter subject marks per student</small></div>
+          <button class="btn" onclick="openMarksModal()">+ Add / Edit Marks</button>
+        </div>
+        <div class="toolbar">
+          <select id="marksCourse" onchange="refreshMarksTable()"></select>
+          <select id="marksSem" onchange="refreshMarksTable()"></select>
+          <input id="marksSearch" placeholder="Filter by name or reg…" oninput="refreshMarksTable()">
+        </div>
+        <div class="tablewrap"><table class="table"><thead>
+          <tr><th>Reg No</th><th>Name</th><th>Subject</th><th>Marks</th><th>Max</th><th>%</th><th>Grade</th><th></th></tr>
+        </thead><tbody id="marksTable"></tbody></table></div>
+      </section>
+
+      <!-- Fees -->
+      <section id="fees" class="section">
+        <div class="titlebar">
+          <div><h2>Fee Tracking</h2><small>Update fee status per student</small></div>
+        </div>
+        <div class="toolbar">
+          <input id="feeSearch" placeholder="Search student…" oninput="refreshFeesTable()">
+          <select id="feeFilter" onchange="refreshFeesTable()">
+            <option value="">All</option>
+            <option value="paid">Paid</option>
+            <option value="pending">Pending</option>
+            <option value="overdue">Overdue</option>
+          </select>
+        </div>
+        <div class="tablewrap"><table class="table"><thead>
+          <tr><th>Reg No</th><th>Name</th><th>Course</th><th>Amount</th><th>Status</th><th>Due Date</th><th>Actions</th></tr>
+        </thead><tbody id="feesTable"></tbody></table></div>
+      </section>
+
+      <!-- Notices -->
+      <section id="notices" class="section">
+        <div class="titlebar">
+          <div><h2>Notices & Announcements</h2><small>Published notices appear on student portal</small></div>
+        </div>
+        <div class="panel" style="margin-bottom:16px">
+          <div class="field"><label>TITLE</label><input id="noticeTitle" placeholder="Exam schedule / Holiday notice…"></div>
+          <div class="field"><label>MESSAGE</label><textarea id="noticeBody" placeholder="Write the announcement…"></textarea></div>
+          <div class="actions">
+            <button class="btn" onclick="publishNotice()">Publish Notice</button>
+            <button class="btn secondary" onclick="clearNoticeForm()">Clear</button>
+          </div>
+        </div>
+        <div id="noticeList"></div>
+      </section>
+
+      <!-- Courses -->
+      <section id="courses" class="section">
+        <div class="titlebar">
+          <div><h2>Courses</h2><small>Manage available programmes</small></div>
+        </div>
+        <div class="toolbar">
+          <input id="newCourse" placeholder="New course name (e.g. MCA)">
+          <button class="btn" onclick="addCourse()">Add Course</button>
+        </div>
+        <div id="courseList" class="tablewrap" style="padding:4px 0"></div>
+      </section>
+
+      <!-- Activity -->
+      <section id="activity" class="section">
+        <div class="titlebar">
+          <div><h2>Activity Log</h2><small>Audit trail of important actions</small></div>
+          <button class="btn secondary sm" onclick="clearActivityLog()">Clear Log</button>
+        </div>
+        <div id="fullLog" class="tablewrap" style="padding:10px 16px;max-height:60vh;overflow:auto"></div>
+      </section>
+
+      <!-- Backup / Recovery -->
+      <section id="backup" class="section">
+        <div class="titlebar">
+          <div><h2>Data Recovery Center</h2><small>Protect against browser data loss</small></div>
+        </div>
+        <div class="stats" style="grid-template-columns:repeat(3,1fr);margin-bottom:18px">
+          <div class="stat"><small>STUDENTS</small><b id="bkStudents">0</b></div>
+          <div class="stat"><small>LAST AUTO-SAVE</small><b id="bkTime" style="font-size:15px">—</b></div>
+          <div class="stat"><small>RECOVERY COPIES</small><b id="bkSlots">0</b></div>
+        </div>
+        <div class="grid-2">
+          <div class="mini-card">
+            <h4 style="margin:0 0 8px">Download Backup</h4>
+            <p style="color:var(--muted);font-size:13px;margin:0 0 12px">Full JSON snapshot (students, courses, attendance, marks, fees, notices, settings).</p>
+            <button class="btn green" onclick="downloadBackup()">⬇ Download Full Backup</button>
+          </div>
+          <div class="mini-card">
+            <h4 style="margin:0 0 8px">Restore from File</h4>
+            <p style="color:var(--muted);font-size:13px;margin:0 0 12px">Replace current data with a previously downloaded NEXUS backup.</p>
+            <button class="btn orange" onclick="document.getElementById('restoreFile').click()">⬆ Restore Backup</button>
+            <input type="file" id="restoreFile" accept=".json,application/json" class="hidden" onchange="restoreBackupFile(this)">
+          </div>
+        </div>
+        <div class="notice-box" style="margin-top:16px">
+          <b>How recovery works</b><br>
+          • Live data lives in <code>localStorage</code>.<br>
+          • A recovery snapshot is written on every save.<br>
+          • Up to 5 timestamped recovery slots are kept automatically.<br>
+          • Always download a JSON backup before clearing browser data or switching devices.
+        </div>
+        <div style="margin-top:16px">
+          <h4 style="margin:0 0 8px;font-size:14px;color:var(--muted)">Recovery slots (this browser)</h4>
+          <div id="slotList"></div>
+        </div>
+      </section>
+
+      <!-- Settings -->
+      <section id="settings" class="section">
+        <div class="titlebar">
+          <div><h2>Settings</h2><small>Password, registration prefix, danger zone</small></div>
+        </div>
+        <div class="panel" style="max-width:480px">
+          <h3 style="margin:0 0 12px;font-size:16px">Change Admin Password</h3>
+          <div class="field"><label>CURRENT PASSWORD</label><input id="curPass" type="password"></div>
+          <div class="field"><label>NEW PASSWORD</label><input id="newPass" type="password" placeholder="Min 6 characters"></div>
+          <div class="field"><label>CONFIRM NEW PASSWORD</label><input id="newPass2" type="password"></div>
+          <div class="actions"><button class="btn" onclick="changePassword()">Update Password</button></div>
+          <div class="msg" id="passMsg"></div>
+        </div>
+        <div class="panel" style="max-width:480px;margin-top:16px">
+          <h3 style="margin:0 0 12px;font-size:16px">Registration Prefix</h3>
+          <div class="field"><label>PREFIX (used when auto-generating reg nos)</label><input id="regPrefix" value="NEXUS"></div>
+          <div class="actions"><button class="btn secondary" onclick="saveRegPrefix()">Save Prefix</button></div>
+        </div>
+        <div class="panel" style="max-width:480px;margin-top:16px;border-color:#5a2030">
+          <h3 style="margin:0 0 8px;font-size:16px;color:var(--red)">Danger Zone</h3>
+          <p style="color:var(--muted);font-size:13px;margin:0 0 12px">Wipe all local data. This cannot be undone unless you have a backup file.</p>
+          <button class="btn danger" onclick="wipeAllData()">Wipe All Local Data</button>
+        </div>
+      </section>
+    </main>
+  </div>
+</div>
+
+<!-- STUDENT DASHBOARD -->
+<div id="studentDash" class="hidden">
+  <div class="container studentbox">
+    <div class="titlebar">
+      <div>
+        <h2 id="stuWelcome">Student Portal</h2>
+        <small id="stuSub" style="color:var(--muted)"></small>
+      </div>
+      <button class="btn secondary" onclick="logout()">Sign Out</button>
+    </div>
+    <div class="notice-box" id="stuBlocked" class="hidden" style="border-color:#673040;background:#2a1218;color:#ff9cac">
+      Your account is currently <b>blocked</b>. Contact the faculty office.
+    </div>
+    <div class="tabs" id="stuTabs">
+      <button class="active" onclick="stuTab('profile',this)">Profile</button>
+      <button onclick="stuTab('myatt',this)">Attendance</button>
+      <button onclick="stuTab('mymarks',this)">Marks</button>
+      <button onclick="stuTab('myfees',this)">Fees</button>
+      <button onclick="stuTab('mynotices',this)">Notices</button>
+    </div>
+
+    <div id="tab-profile" class="stu-panel">
+      <div class="panel">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;flex-wrap:wrap;gap:8px">
+          <div>
+            <div style="font-size:12px;color:var(--muted)">Profile completeness</div>
+            <div class="progress-bar" style="width:180px"><i id="profileBar" style="width:0%"></i></div>
+          </div>
+          <span id="profilePct" style="font-size:13px;color:var(--cyan)">0%</span>
+        </div>
+        <form id="studentForm" onsubmit="saveStudentProfile(event)">
+          <div class="row">
+            <div class="field"><label>REGISTRATION NUMBER</label><input id="fReg" readonly style="opacity:.7"></div>
+            <div class="field"><label>ROLL NUMBER *</label><input id="fRoll" required></div>
+          </div>
+          <div class="row">
+            <div class="field"><label>FULL NAME *</label><input id="fName" required></div>
+            <div class="field"><label>AGE *</label><input id="fAge" type="number" min="15" max="80" required></div>
+          </div>
+          <div class="row">
+            <div class="field"><label>COURSE *</label><select id="fCourse" required></select></div>
+            <div class="field"><label>SEMESTER *</label><select id="fSem" required></select></div>
+          </div>
+          <div class="row">
+            <div class="field"><label>EMAIL *</label><input id="fEmail" type="email" required></div>
+            <div class="field"><label>PHONE *</label><input id="fPhone" required placeholder="10-digit mobile"></div>
+          </div>
+          <div class="row">
+            <div class="field"><label>GENDER</label><select id="fGender"><option>Prefer not to say</option><option>Male</option><option>Female</option><option>Other</option></select></div>
+            <div class="field"><label>CITY</label><input id="fCity"></div>
+          </div>
+          <div class="row">
+            <div class="field"><label>BLOOD GROUP</label><select id="fBlood"><option value="">—</option><option>A+</option><option>A-</option><option>B+</option><option>B-</option><option>O+</option><option>O-</option><option>AB+</option><option>AB-</option></select></div>
+            <div class="field"><label>GUARDIAN NAME</label><input id="fGuardian"></div>
+          </div>
+          <div class="field"><label>ADDRESS</label><input id="fAddress"></div>
+          <div class="actions"><button class="btn" type="submit">Save / Update Profile</button></div>
+          <div id="saveMsg" class="msg"></div>
+        </form>
+        <hr style="border:0;border-top:1px solid var(--line);margin:22px 0">
+        <h3 style="margin:0 0 12px;font-size:15px">Change Password</h3>
+        <div class="row">
+          <div class="field"><label>CURRENT PASSWORD</label><input id="fCurPass" type="password" autocomplete="current-password"></div>
+          <div class="field"><label>NEW PASSWORD</label><input id="fNewPass" type="password" placeholder="Min 4 characters" autocomplete="new-password"></div>
+        </div>
+        <div class="field"><label>CONFIRM NEW PASSWORD</label><input id="fNewPass2" type="password" autocomplete="new-password"></div>
+        <div class="actions"><button class="btn secondary" type="button" onclick="changeStudentPassword()">Update Password</button></div>
+        <div id="stuPassMsg" class="msg"></div>
+      </div>
+    </div>
+
+    <div id="tab-myatt" class="stu-panel hidden">
+      <div class="panel">
+        <h3 style="margin:0 0 12px;font-size:16px">Attendance Summary</h3>
+        <div id="stuAttSummary" class="stats" style="grid-template-columns:repeat(3,1fr);margin-bottom:16px"></div>
+        <div class="tablewrap"><table class="table"><thead><tr><th>Date</th><th>Status</th></tr></thead><tbody id="stuAttTable"></tbody></table></div>
+      </div>
+    </div>
+
+    <div id="tab-mymarks" class="stu-panel hidden">
+      <div class="panel">
+        <h3 style="margin:0 0 12px;font-size:16px">Marks & Grades</h3>
+        <div class="tablewrap"><table class="table"><thead><tr><th>Subject</th><th>Marks</th><th>Max</th><th>%</th><th>Grade</th></tr></thead><tbody id="stuMarksTable"></tbody></table></div>
+      </div>
+    </div>
+
+    <div id="tab-myfees" class="stu-panel hidden">
+      <div class="panel">
+        <h3 style="margin:0 0 12px;font-size:16px">Fee Status</h3>
+        <div id="stuFeeCard"></div>
+      </div>
+    </div>
+
+    <div id="tab-mynotices" class="stu-panel hidden">
+      <div id="stuNoticeList"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ADD / EDIT STUDENT MODAL -->
+<div id="modal" class="modal hidden">
+  <div class="panel">
+    <h2 id="modalTitle">Add Student</h2>
+    <div class="row">
+      <div class="field"><label>REGISTRATION NUMBER *</label><input id="mReg" placeholder="Auto if empty"></div>
+      <div class="field"><label>ROLL NUMBER</label><input id="mRoll"></div>
+    </div>
+    <div class="row">
+      <div class="field"><label>NAME *</label><input id="mName"></div>
+      <div class="field"><label>AGE</label><input id="mAge" type="number" min="15" max="80"></div>
+    </div>
+    <div class="row">
+      <div class="field"><label>COURSE *</label><select id="mCourse"></select></div>
+      <div class="field"><label>SEMESTER *</label><select id="mSem"></select></div>
+    </div>
+    <div class="row">
+      <div class="field"><label>EMAIL</label><input id="mEmail" type="email"></div>
+      <div class="field"><label>PHONE</label><input id="mPhone"></div>
+    </div>
+    <div class="field"><label>STUDENT PASSWORD <span style="color:var(--muted);font-weight:400">(optional — for portal login)</span></label><input id="mPass" type="password" placeholder="Leave blank to keep existing / unset"></div>
+    <div class="actions">
+      <button class="btn" onclick="saveAdminStudent()">Save Record</button>
+      <button class="btn secondary" onclick="closeModal()">Cancel</button>
+      <button class="btn ghost" onclick="genReg()">Auto Reg No</button>
+    </div>
+    <div id="modalMsg" class="msg"></div>
+  </div>
+</div>
+
+<!-- MARKS MODAL -->
+<div id="marksModal" class="modal hidden">
+  <div class="panel">
+    <h2>Enter Marks</h2>
+    <div class="field"><label>STUDENT</label><select id="mkStudent"></select></div>
+    <div class="row">
+      <div class="field"><label>SUBJECT *</label><input id="mkSubject" placeholder="e.g. Data Structures"></div>
+      <div class="field"><label>MARKS OBTAINED *</label><input id="mkObtained" type="number" min="0" step="0.5"></div>
+    </div>
+    <div class="row">
+      <div class="field"><label>MAXIMUM MARKS *</label><input id="mkMax" type="number" min="1" value="100"></div>
+      <div class="field"><label>EXAM / TERM</label><input id="mkTerm" placeholder="Mid-term / End-sem"></div>
+    </div>
+    <div class="actions">
+      <button class="btn" onclick="saveMarks()">Save Marks</button>
+      <button class="btn secondary" onclick="closeMarksModal()">Cancel</button>
+    </div>
+    <div id="mkMsg" class="msg"></div>
+  </div>
+</div>
+
+<!-- FEE EDIT MODAL -->
+<div id="feeModal" class="modal hidden">
+  <div class="panel">
+    <h2>Update Fee</h2>
+    <p id="feeStuName" style="color:var(--muted);margin:0 0 12px"></p>
+    <div class="row">
+      <div class="field"><label>AMOUNT (₹)</label><input id="feeAmount" type="number" min="0" step="100"></div>
+      <div class="field"><label>STATUS</label>
+        <select id="feeStatus"><option value="pending">Pending</option><option value="paid">Paid</option><option value="overdue">Overdue</option></select>
+      </div>
+    </div>
+    <div class="field"><label>DUE DATE</label><input id="feeDue" type="date"></div>
+    <div class="actions">
+      <button class="btn" onclick="saveFee()">Save</button>
+      <button class="btn secondary" onclick="closeFeeModal()">Cancel</button>
+    </div>
+  </div>
+</div>
+
+<div id="toastHost"></div>
+
+<script>
+/* ============================================================
+   NEXUS ADVANCED CMS — state, storage & recovery
+   ============================================================ */
+const KEYS = {
+  students: 'nexus_adv_students',
+  courses: 'nexus_adv_courses',
+  attendance: 'nexus_adv_attendance',
+  marks: 'nexus_adv_marks',
+  fees: 'nexus_adv_fees',
+  notices: 'nexus_adv_notices',
+  activity: 'nexus_adv_activity',
+  settings: 'nexus_adv_settings',
+  backup: 'nexus_adv_recovery',
+  slots: 'nexus_adv_slots'
+};
+
+const DEFAULT_COURSES = ["BCA","BBA","B.Com","BA","B.Sc","MCA","MBA"];
+const SEMESTERS = ["Semester 1","Semester 2","Semester 3","Semester 4","Semester 5","Semester 6","Semester 7","Semester 8"];
+const DEFAULT_SETTINGS = { password: 'admin123', regPrefix: 'NEXUS', year: new Date().getFullYear() };
+
+let students = [], courses = [], attendance = {}, marks = [], fees = {}, notices = [], activity = [];
+let settings = { ...DEFAULT_SETTINGS };
+let currentStudent = null, editing = null, feeEditReg = null;
+
+function readJSON(key, fallback) {
+  try {
+    const v = localStorage.getItem(key);
+    return v ? JSON.parse(v) : fallback;
+  } catch (e) { return fallback; }
+}
+
+function loadAll() {
+  students = readJSON(KEYS.students, []);
+  courses = readJSON(KEYS.courses, DEFAULT_COURSES.slice());
+  attendance = readJSON(KEYS.attendance, {});
+  marks = readJSON(KEYS.marks, []);
+  fees = readJSON(KEYS.fees, {});
+  notices = readJSON(KEYS.notices, []);
+  activity = readJSON(KEYS.activity, []);
+  settings = { ...DEFAULT_SETTINGS, ...readJSON(KEYS.settings, {}) };
+  // Auto-recover primary empty DB from recovery snapshot
+  if (students.length === 0 && courses.length <= DEFAULT_COURSES.length) {
+    const bak = readJSON(KEYS.backup, null);
+    if (bak && Array.isArray(bak.students) && bak.students.length) {
+      students = bak.students;
+      courses = bak.courses || courses;
+      attendance = bak.attendance || {};
+      marks = bak.marks || [];
+      fees = bak.fees || {};
+      notices = bak.notices || [];
+      log('System recovered data from recovery snapshot');
+    }
+  }
+}
+
+function snapshot() {
+  return {
+    version: 2,
+    savedAt: new Date().toISOString(),
+    students, courses, attendance, marks, fees, notices, activity, settings: { ...settings, password: '***' }
+  };
+}
+
+function save() {
+  try {
+    localStorage.setItem(KEYS.students, JSON.stringify(students));
+    localStorage.setItem(KEYS.courses, JSON.stringify(courses));
+    localStorage.setItem(KEYS.attendance, JSON.stringify(attendance));
+    localStorage.setItem(KEYS.marks, JSON.stringify(marks));
+    localStorage.setItem(KEYS.fees, JSON.stringify(fees));
+    localStorage.setItem(KEYS.notices, JSON.stringify(notices));
+    localStorage.setItem(KEYS.activity, JSON.stringify(activity.slice(0, 200)));
+    localStorage.setItem(KEYS.settings, JSON.stringify(settings));
+
+    const snap = {
+      version: 2,
+      savedAt: new Date().toISOString(),
+      students, courses, attendance, marks, fees, notices, activity: activity.slice(0, 50),
+      settings
+    };
+    localStorage.setItem(KEYS.backup, JSON.stringify(snap));
+
+    // Keep last 5 timestamped slots
+    let slots = readJSON(KEYS.slots, []);
+    slots.unshift({ at: snap.savedAt, count: students.length });
+    slots = slots.slice(0, 5);
+    // Store full data only for newest slot to save space — we keep meta + full in backup key
+    localStorage.setItem(KEYS.slots, JSON.stringify(slots));
+
+    const el = document.getElementById('backupStatus');
+    if (el) el.textContent = 'Saved • ' + new Date().toLocaleString();
+  } catch (e) {
+    console.warn('NEXUS storage error', e);
+    toast('Storage full or blocked. Download a backup now.', 'err');
+  }
+}
+
+function log(msg) {
+  activity.unshift({ t: new Date().toISOString(), msg });
+  if (activity.length > 200) activity.length = 200;
+  try { localStorage.setItem(KEYS.activity, JSON.stringify(activity)); } catch (e) {}
+}
+
+function toast(msg, type = 'ok') {
+  const host = document.getElementById('toastHost');
+  const el = document.createElement('div');
+  el.className = 'toast ' + type;
+  el.textContent = msg;
+  host.appendChild(el);
+  setTimeout(() => { el.style.opacity = '0'; setTimeout(() => el.remove(), 300); }, 3200);
+}
+
+function esc(s) {
+  return String(s ?? '').replace(/[&<>"']/g, m => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;' }[m]));
+}
+
+function gradeOf(pct) {
+  if (pct >= 90) return 'A+';
+  if (pct >= 80) return 'A';
+  if (pct >= 70) return 'B+';
+  if (pct >= 60) return 'B';
+  if (pct >= 50) return 'C';
+  if (pct >= 40) return 'D';
+  return 'F';
+}
+
+/* ============================================================
+   Navigation
+   ============================================================ */
+function show(id) {
+  document.querySelectorAll('.screen,#teacherDash,#studentDash').forEach(x => x.classList.add('hidden'));
+  document.getElementById(id).classList.remove('hidden');
+  if (id === 'studentLogin') switchStudentAuth('signin');
+}
+
+function section(id, btn) {
+  document.querySelectorAll('#teacherDash .section').forEach(s => s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  document.querySelectorAll('.side button[data-sec]').forEach(b => b.classList.remove('active'));
+  if (btn) btn.classList.add('active');
+  if (id === 'overview') refreshOverview();
+  if (id === 'students') refreshStudents();
+  if (id === 'attendance') { fillAttSelects(); loadAttendanceSheet(); }
+  if (id === 'marks') { fillMarksSelects(); refreshMarksTable(); }
+  if (id === 'fees') refreshFeesTable();
+  if (id === 'notices') renderNotices();
+  if (id === 'courses') renderCourses();
+  if (id === 'activity') renderFullLog();
+  if (id === 'backup') refreshBackupUI();
+  if (id === 'settings') {
+    document.getElementById('regPrefix').value = settings.regPrefix || 'NEXUS';
+  }
+}
+
+function stuTab(id, btn) {
+  document.querySelectorAll('.stu-panel').forEach(p => p.classList.add('hidden'));
+  document.getElementById('tab-' + id).classList.remove('hidden');
+  document.querySelectorAll('#stuTabs button').forEach(b => b.classList.remove('active'));
+  if (btn) btn.classList.add('active');
+  if (id === 'myatt') renderStudentAttendance();
+  if (id === 'mymarks') renderStudentMarks();
+  if (id === 'myfees') renderStudentFees();
+  if (id === 'mynotices') renderStudentNotices();
+}
+
+/* ============================================================
+   Auth
+   ============================================================ */
+function teacherAuth() {
+  const pass = document.getElementById('adminPass').value;
+  if (pass === settings.password) {
+    fillSelects();
+    show('teacherDash');
+    section('overview', document.querySelector('.side button[data-sec="overview"]'));
+    log('Faculty logged in');
+    toast('Welcome to Faculty Portal');
+  } else {
+    document.getElementById('adminMsg').textContent = 'Incorrect password.';
+  }
+}
+
+function switchStudentAuth(mode) {
+  const signIn = mode === 'signin';
+  document.getElementById('stuAuthSignIn').classList.toggle('hidden', !signIn);
+  document.getElementById('stuAuthSignUp').classList.toggle('hidden', signIn);
+  document.getElementById('tabBtnSignIn').classList.toggle('active', signIn);
+  document.getElementById('tabBtnSignUp').classList.toggle('active', !signIn);
+  document.getElementById('siMsg').textContent = '';
+  document.getElementById('suMsg').textContent = '';
+  if (!signIn) {
+    fillSelects();
+    const c = document.getElementById('suCourse');
+    const s = document.getElementById('suSem');
+    if (c) c.innerHTML = courses.map(x => `<option>${esc(x)}</option>`).join('');
+    if (s) s.innerHTML = SEMESTERS.map(x => `<option>${x}</option>`).join('');
+  }
+}
+
+function enterStudentPortal(s) {
+  currentStudent = s.reg;
+  show('studentDash');
+  fillSelects();
+  loadStudentForm();
+  document.getElementById('stuWelcome').textContent = s.name ? s.name : 'Student Portal';
+  document.getElementById('stuSub').textContent = s.reg + (s.course ? ' • ' + s.course : '');
+  const blocked = s.status === 'blocked';
+  document.getElementById('stuBlocked').classList.toggle('hidden', !blocked);
+  stuTab('profile', document.querySelector('#stuTabs button'));
+}
+
+function studentSignIn() {
+  const reg = document.getElementById('siReg').value.trim();
+  const pass = document.getElementById('siPass').value;
+  const msg = document.getElementById('siMsg');
+  msg.className = 'msg';
+  if (!reg || !pass) {
+    msg.textContent = 'Registration number and password are required.';
+    return;
+  }
+  const s = students.find(x => x.reg.toLowerCase() === reg.toLowerCase());
+  if (!s) {
+    msg.textContent = 'No account found. Please Sign Up first.';
+    return;
+  }
+  if (s.status === 'blocked') {
+    msg.textContent = 'Your account is blocked. Contact faculty.';
+    return;
+  }
+  // Legacy records without password: set password on first successful claim
+  if (!s.password) {
+    if (pass.length < 4) {
+      msg.textContent = 'Set a password of at least 4 characters (first login).';
+      return;
+    }
+    s.password = pass;
+    save();
+    log('Student set password on first login: ' + s.reg);
+    toast('Password set. Welcome!', 'ok');
+  } else if (s.password !== pass) {
+    msg.textContent = 'Incorrect password.';
+    return;
+  }
+  document.getElementById('siPass').value = '';
+  log('Student signed in: ' + s.reg);
+  toast('Welcome back' + (s.name ? ', ' + s.name : ''));
+  enterStudentPortal(s);
+}
+
+function studentSignUp() {
+  const reg = document.getElementById('suReg').value.trim();
+  const name = document.getElementById('suName').value.trim();
+  const course = document.getElementById('suCourse').value;
+  const sem = document.getElementById('suSem').value;
+  const email = document.getElementById('suEmail').value.trim();
+  const pass = document.getElementById('suPass').value;
+  const pass2 = document.getElementById('suPass2').value;
+  const msg = document.getElementById('suMsg');
+  msg.className = 'msg';
+
+  if (!reg || !name) {
+    msg.textContent = 'Registration number and full name are required.';
+    return;
+  }
+  if (pass.length < 4) {
+    msg.textContent = 'Password must be at least 4 characters.';
+    return;
+  }
+  if (pass !== pass2) {
+    msg.textContent = 'Passwords do not match.';
+    return;
+  }
+  if (students.some(x => x.reg.toLowerCase() === reg.toLowerCase())) {
+    msg.textContent = 'This registration number is already registered. Please Sign In.';
+    return;
+  }
+
+  const s = {
+    reg, roll: '', name, age: '', course: course || courses[0] || 'BCA', sem: sem || SEMESTERS[0],
+    status: 'active', email, phone: '', gender: 'Prefer not to say', city: '',
+    address: '', blood: '', guardian: '', password: pass,
+    createdAt: new Date().toISOString()
+  };
+  students.push(s);
+  save();
+  log('Student signed up: ' + reg);
+  toast('Account created successfully');
+  // Clear form
+  ['suReg','suName','suEmail','suPass','suPass2'].forEach(id => { const e = document.getElementById(id); if (e) e.value = ''; });
+  enterStudentPortal(s);
+}
+
+function logout() {
+  currentStudent = null;
+  document.getElementById('adminPass').value = '';
+  ['siReg','siPass','suReg','suName','suEmail','suPass','suPass2'].forEach(id => {
+    const e = document.getElementById(id);
+    if (e) e.value = '';
+  });
+  document.getElementById('siMsg').textContent = '';
+  document.getElementById('suMsg').textContent = '';
+  switchStudentAuth('signin');
+  show('home');
+}
+
+/* ============================================================
+   Selects & helpers
+   ============================================================ */
+function fillSelects() {
+  const ids = ['mCourse', 'fCourse', 'filterCourse', 'attCourse', 'marksCourse'];
+  ids.forEach(id => {
+    const e = document.getElementById(id);
+    if (!e) return;
+    const cur = e.value;
+    if (id === 'filterCourse') {
+      e.innerHTML = '<option value="">All courses</option>' + courses.map(c => `<option value="${esc(c)}">${esc(c)}</option>`).join('');
+    } else {
+      e.innerHTML = courses.map(c => `<option>${esc(c)}</option>`).join('');
+    }
+    if (cur) e.value = cur;
+  });
+  const semIds = ['mSem', 'fSem', 'filterSem', 'attSem', 'marksSem'];
+  semIds.forEach(id => {
+    const e = document.getElementById(id);
+    if (!e) return;
+    const cur = e.value;
+    if (id === 'filterSem') {
+      e.innerHTML = '<option value="">All semesters</option>' + SEMESTERS.map(s => `<option value="${s}">${s}</option>`).join('');
+    } else {
+      e.innerHTML = SEMESTERS.map(s => `<option>${s}</option>`).join('');
+    }
+    if (cur) e.value = cur;
+  });
+}
+
+function genReg() {
+  const prefix = (settings.regPrefix || 'NEXUS') + (settings.year || new Date().getFullYear());
+  let n = 1;
+  const existing = new Set(students.map(s => s.reg.toUpperCase()));
+  while (existing.has((prefix + String(n).padStart(3, '0')).toUpperCase())) n++;
+  document.getElementById('mReg').value = prefix + String(n).padStart(3, '0');
+}
+
+/* ============================================================
+   Overview
+   ============================================================ */
+function refreshOverview() {
+  const active = students.filter(s => s.status !== 'blocked').length;
+  const blocked = students.length - active;
+  const paid = Object.values(fees).filter(f => f.status === 'paid').length;
+  const pendingFees = Object.values(fees).filter(f => f.status !== 'paid').length;
+  const noticeCount = notices.length;
+  const markCount = marks.length;
+
+  document.getElementById('statGrid').innerHTML = `
+    <div class="stat"><small>TOTAL STUDENTS</small><b>${students.length}</b><div class="trend">${active} active</div></div>
+    <div class="stat"><small>BLOCKED</small><b>${blocked}</b></div>
+    <div class="stat"><small>FEE PENDING</small><b>${pendingFees}</b><div class="trend">${paid} paid</div></div>
+    <div class="stat"><small>NOTICES / MARKS</small><b>${noticeCount}</b><div class="trend">${markCount} mark entries</div></div>
+  `;
+  const recent = activity.slice(0, 8);
+  document.getElementById('recentLog').innerHTML = recent.length
+    ? recent.map(a => `<div class="log-item"><span class="time">${new Date(a.t).toLocaleString()}</span><span class="act">${esc(a.msg)}</span></div>`).join('')
+    : '<div class="empty">No activity yet</div>';
+}
+
+/* ============================================================
+   Students CRUD
+   ============================================================ */
+function refreshStudents() {
+  const q = (document.getElementById('searchBox')?.value || '').toLowerCase();
+  const fc = document.getElementById('filterCourse')?.value || '';
+  const fs = document.getElementById('filterSem')?.value || '';
+  const st = document.getElementById('filterStatus')?.value || '';
+
+  let list = students.slice();
+  if (q) list = list.filter(s =>
+    [s.reg, s.roll, s.name, s.email, s.phone, s.course].join(' ').toLowerCase().includes(q)
+  );
+  if (fc) list = list.filter(s => s.course === fc);
+  if (fs) list = list.filter(s => s.sem === fs);
+  if (st) list = list.filter(s => s.status === st);
+
+  const tbody = document.getElementById('studentTable');
+  if (!list.length) {
+    tbody.innerHTML = '<tr><td colspan="7" class="empty">No students found</td></tr>';
+    return;
+  }
+  tbody.innerHTML = list.map(s => `
+    <tr>
+      <td><b>${esc(s.reg)}</b></td>
+      <td>${esc(s.name || '—')}</td>
+      <td>${esc(s.course || '—')}</td>
+      <td>${esc(s.sem || '—')}</td>
+      <td style="font-size:12px">${esc(s.email || '')}${s.phone ? '<br>' + esc(s.phone) : ''}</td>
+      <td><span class="badge ${s.status === 'blocked' ? 'blocked' : 'active'}">${s.status || 'active'}</span></td>
+      <td class="actions-cell">
+        <button class="btn secondary sm" onclick="editStudent('${encodeURIComponent(s.reg)}')">Edit</button>
+        <button class="btn sm ${s.status === 'blocked' ? 'green' : 'danger'}" onclick="toggleBlock('${encodeURIComponent(s.reg)}')">${s.status === 'blocked' ? 'Unblock' : 'Block'}</button>
+        <button class="btn danger sm" onclick="deleteStudent('${encodeURIComponent(s.reg)}')">Del</button>
+      </td>
+    </tr>
+  `).join('');
+}
+
+function openAdd() {
+  editing = null;
+  document.getElementById('modalTitle').textContent = 'Add Student';
+  ['mReg','mRoll','mName','mAge','mEmail','mPhone','mPass'].forEach(id => document.getElementById(id).value = '');
+  fillSelects();
+  document.getElementById('modalMsg').textContent = '';
+  document.getElementById('modal').classList.remove('hidden');
+  genReg();
+}
+
+function editStudent(r) {
+  r = decodeURIComponent(r);
+  const s = students.find(x => x.reg === r);
+  if (!s) return;
+  editing = r;
+  document.getElementById('modalTitle').textContent = 'Edit Student';
+  document.getElementById('mReg').value = s.reg;
+  document.getElementById('mRoll').value = s.roll || '';
+  document.getElementById('mName').value = s.name || '';
+  document.getElementById('mAge').value = s.age || '';
+  document.getElementById('mEmail').value = s.email || '';
+  document.getElementById('mPhone').value = s.phone || '';
+  document.getElementById('mPass').value = '';
+  fillSelects();
+  document.getElementById('mCourse').value = s.course || courses[0];
+  document.getElementById('mSem').value = s.sem || SEMESTERS[0];
+  document.getElementById('modalMsg').textContent = '';
+  document.getElementById('modal').classList.remove('hidden');
+}
+
+function saveAdminStudent() {
+  let reg = document.getElementById('mReg').value.trim();
+  if (!reg) { genReg(); reg = document.getElementById('mReg').value.trim(); }
+  const newPass = document.getElementById('mPass').value;
+  const s = {
+    reg,
+    roll: document.getElementById('mRoll').value.trim(),
+    name: document.getElementById('mName').value.trim(),
+    age: document.getElementById('mAge').value,
+    course: document.getElementById('mCourse').value,
+    sem: document.getElementById('mSem').value,
+    email: document.getElementById('mEmail').value.trim(),
+    phone: document.getElementById('mPhone').value.trim(),
+    status: 'active',
+    gender: 'Prefer not to say', city: '', address: '', blood: '', guardian: '',
+    password: ''
+  };
+  if (!s.name) {
+    document.getElementById('modalMsg').textContent = 'Name is required.';
+    return;
+  }
+  if (editing) {
+    const i = students.findIndex(x => x.reg === editing);
+    if (i >= 0) {
+      s.status = students[i].status;
+      s.gender = students[i].gender;
+      s.city = students[i].city;
+      s.address = students[i].address;
+      s.blood = students[i].blood;
+      s.guardian = students[i].guardian;
+      s.password = newPass ? newPass : (students[i].password || '');
+      if (editing !== reg) {
+        if (fees[editing]) { fees[reg] = fees[editing]; delete fees[editing]; }
+      }
+      students[i] = s;
+      log('Updated student ' + reg);
+    }
+  } else {
+    if (students.some(x => x.reg.toLowerCase() === reg.toLowerCase())) {
+      document.getElementById('modalMsg').textContent = 'Registration number already exists.';
+      return;
+    }
+    s.password = newPass || '';
+    s.createdAt = new Date().toISOString();
+    students.push(s);
+    log('Added student ' + reg);
+  }
+  save();
+  closeModal();
+  refreshStudents();
+  refreshOverview();
+  toast('Student saved');
+}
+
+function closeModal() { document.getElementById('modal').classList.add('hidden'); }
+
+function toggleBlock(r) {
+  r = decodeURIComponent(r);
+  const s = students.find(x => x.reg === r);
+  if (!s) return;
+  s.status = s.status === 'blocked' ? 'active' : 'blocked';
+  save();
+  log((s.status === 'blocked' ? 'Blocked ' : 'Unblocked ') + r);
+  refreshStudents();
+  toast(s.status === 'blocked' ? 'Student blocked' : 'Student unblocked', 'warn');
+}
+
+function deleteStudent(r) {
+  r = decodeURIComponent(r);
+  if (!confirm('Delete student ' + r + ' and related fee/marks data?')) return;
+  students = students.filter(x => x.reg !== r);
+  marks = marks.filter(m => m.reg !== r);
+  delete fees[r];
+  // Clean attendance references
+  Object.keys(attendance).forEach(k => {
+    if (attendance[k] && attendance[k][r] !== undefined) delete attendance[k][r];
+  });
+  save();
+  log('Deleted student ' + r);
+  refreshStudents();
+  toast('Student deleted', 'err');
+}
+
+/* ============================================================
+   Student profile (self)
+   ============================================================ */
+function loadStudentForm() {
+  const s = students.find(x => x.reg === currentStudent);
+  if (!s) return;
+  document.getElementById('fReg').value = s.reg;
+  document.getElementById('fRoll').value = s.roll || '';
+  document.getElementById('fName').value = s.name || '';
+  document.getElementById('fAge').value = s.age || '';
+  document.getElementById('fEmail').value = s.email || '';
+  document.getElementById('fPhone').value = s.phone || '';
+  document.getElementById('fGender').value = s.gender || 'Prefer not to say';
+  document.getElementById('fCity').value = s.city || '';
+  document.getElementById('fBlood').value = s.blood || '';
+  document.getElementById('fGuardian').value = s.guardian || '';
+  document.getElementById('fAddress').value = s.address || '';
+  fillSelects();
+  if (s.course) document.getElementById('fCourse').value = s.course;
+  if (s.sem) document.getElementById('fSem').value = s.sem;
+  updateProfilePct(s);
+}
+
+function updateProfilePct(s) {
+  const fields = ['name','roll','age','course','sem','email','phone','gender','city','address','blood','guardian'];
+  const filled = fields.filter(f => s[f] && String(s[f]).trim() && s[f] !== 'Prefer not to say').length;
+  const pct = Math.round((filled / fields.length) * 100);
+  document.getElementById('profileBar').style.width = pct + '%';
+  document.getElementById('profilePct').textContent = pct + '%';
+}
+
+function saveStudentProfile(e) {
+  e.preventDefault();
+  const s = students.find(x => x.reg === currentStudent);
+  if (!s) return;
+  if (s.status === 'blocked') {
+    document.getElementById('saveMsg').textContent = 'Account blocked — cannot update.';
+    return;
+  }
+  s.roll = document.getElementById('fRoll').value.trim();
+  s.name = document.getElementById('fName').value.trim();
+  s.age = document.getElementById('fAge').value;
+  s.course = document.getElementById('fCourse').value;
+  s.sem = document.getElementById('fSem').value;
+  s.email = document.getElementById('fEmail').value.trim();
+  s.phone = document.getElementById('fPhone').value.trim();
+  s.gender = document.getElementById('fGender').value;
+  s.city = document.getElementById('fCity').value.trim();
+  s.blood = document.getElementById('fBlood').value;
+  s.guardian = document.getElementById('fGuardian').value.trim();
+  s.address = document.getElementById('fAddress').value.trim();
+  save();
+  log('Student updated profile: ' + s.reg);
+  updateProfilePct(s);
+  document.getElementById('stuWelcome').textContent = s.name || 'Student Portal';
+  document.getElementById('saveMsg').className = 'msg ok';
+  document.getElementById('saveMsg').textContent = 'Profile saved successfully.';
+  toast('Profile updated');
+}
+
+function changeStudentPassword() {
+  const s = students.find(x => x.reg === currentStudent);
+  if (!s) return;
+  const cur = document.getElementById('fCurPass').value;
+  const n1 = document.getElementById('fNewPass').value;
+  const n2 = document.getElementById('fNewPass2').value;
+  const msg = document.getElementById('stuPassMsg');
+  msg.className = 'msg';
+  if (s.password && s.password !== cur) {
+    msg.textContent = 'Current password is incorrect.';
+    return;
+  }
+  if (!s.password && !cur && n1.length < 4) {
+    msg.textContent = 'New password must be at least 4 characters.';
+    return;
+  }
+  if (n1.length < 4) {
+    msg.textContent = 'New password must be at least 4 characters.';
+    return;
+  }
+  if (n1 !== n2) {
+    msg.textContent = 'New passwords do not match.';
+    return;
+  }
+  s.password = n1;
+  save();
+  log('Student changed password: ' + s.reg);
+  msg.className = 'msg ok';
+  msg.textContent = 'Password updated.';
+  document.getElementById('fCurPass').value = '';
+  document.getElementById('fNewPass').value = '';
+  document.getElementById('fNewPass2').value = '';
+  toast('Password updated');
+}
+
+/* ============================================================
+   Attendance
+   ============================================================ */
+function fillAttSelects() {
+  fillSelects();
+  const d = document.getElementById('attDate');
+  if (d && !d.value) d.value = new Date().toISOString().slice(0, 10);
+}
+
+function attKey(course, sem, date) {
+  return course + '|' + sem + '|' + date;
+}
+
+function loadAttendanceSheet() {
+  const course = document.getElementById('attCourse').value;
+  const sem = document.getElementById('attSem').value;
+  const date = document.getElementById('attDate').value;
+  if (!course || !sem || !date) return;
+
+  const list = students.filter(s => s.course === course && s.sem === sem && s.status !== 'blocked');
+  const key = attKey(course, sem, date);
+  const day = attendance[key] || {};
+
+  const tbody = document.getElementById('attTable');
+  if (!list.length) {
+    tbody.innerHTML = '<tr><td colspan="4" class="empty">No active students for this course/semester</td></tr>';
+    document.getElementById('attHint').textContent = '';
+    return;
+  }
+  tbody.innerHTML = list.map(s => {
+    const pct = calcAttendancePct(s.reg, course, sem);
+    const checked = day[s.reg] === true || day[s.reg] === undefined ? 'checked' : '';
+    return `<tr>
+      <td>${esc(s.reg)}</td>
+      <td>${esc(s.name || '—')}</td>
+      <td><input type="checkbox" data-reg="${esc(s.reg)}" ${day[s.reg] === false ? '' : 'checked'}></td>
+      <td>${pct}%</td>
+    </tr>`;
+  }).join('');
+  document.getElementById('attHint').textContent = list.length + ' students • Date: ' + date;
+}
+
+function markAllPresent() {
+  document.querySelectorAll('#attTable input[type=checkbox]').forEach(c => c.checked = true);
+}
+
+function saveAttendanceSheet() {
+  const course = document.getElementById('attCourse').value;
+  const sem = document.getElementById('attSem').value;
+  const date = document.getElementById('attDate').value;
+  if (!date) { toast('Select a date', 'err'); return; }
+  const key = attKey(course, sem, date);
+  const day = {};
+  document.querySelectorAll('#attTable input[type=checkbox]').forEach(c => {
+    day[c.dataset.reg] = c.checked;
+  });
+  attendance[key] = day;
+  save();
+  log('Attendance saved: ' + course + ' / ' + sem + ' / ' + date);
+  loadAttendanceSheet();
+  toast('Attendance saved');
+}
+
+function calcAttendancePct(reg, course, sem) {
+  let total = 0, present = 0;
+  Object.keys(attendance).forEach(k => {
+    if (!k.startsWith(course + '|' + sem + '|')) return;
+    if (attendance[k][reg] === undefined) return;
+    total++;
+    if (attendance[k][reg]) present++;
+  });
+  if (!total) return '—';
+  return Math.round((present / total) * 100);
+}
+
+function renderStudentAttendance() {
+  const s = students.find(x => x.reg === currentStudent);
+  if (!s) return;
+  const rows = [];
+  let present = 0, total = 0;
+  Object.keys(attendance).sort().reverse().forEach(k => {
+    const parts = k.split('|');
+    if (parts[0] !== s.course || parts[1] !== s.sem) return;
+    if (attendance[k][s.reg] === undefined) return;
+    total++;
+    const ok = attendance[k][s.reg];
+    if (ok) present++;
+    rows.push(`<tr><td>${esc(parts[2])}</td><td><span class="badge ${ok ? 'active' : 'blocked'}">${ok ? 'Present' : 'Absent'}</span></td></tr>`);
+  });
+  const pct = total ? Math.round((present / total) * 100) : 0;
+  document.getElementById('stuAttSummary').innerHTML = `
+    <div class="stat"><small>PRESENT</small><b>${present}</b></div>
+    <div class="stat"><small>TOTAL DAYS</small><b>${total}</b></div>
+    <div class="stat"><small>PERCENTAGE</small><b>${total ? pct + '%' : '—'}</b></div>
+  `;
+  document.getElementById('stuAttTable').innerHTML = rows.length ? rows.join('') : '<tr><td colspan="2" class="empty">No attendance records yet</td></tr>';
+}
+
+/* ============================================================
+   Marks
+   ============================================================ */
+function fillMarksSelects() { fillSelects(); }
+
+function openMarksModal() {
+  const sel = document.getElementById('mkStudent');
+  sel.innerHTML = students.filter(s => s.status !== 'blocked').map(s =>
+    `<option value="${esc(s.reg)}">${esc(s.reg)} — ${esc(s.name || 'Unnamed')}</option>`
+  ).join('');
+  document.getElementById('mkSubject').value = '';
+  document.getElementById('mkObtained').value = '';
+  document.getElementById('mkMax').value = '100';
+  document.getElementById('mkTerm').value = '';
+  document.getElementById('mkMsg').textContent = '';
+  document.getElementById('marksModal').classList.remove('hidden');
+}
+
+function closeMarksModal() { document.getElementById('marksModal').classList.add('hidden'); }
+
+function saveMarks() {
+  const reg = document.getElementById('mkStudent').value;
+  const subject = document.getElementById('mkSubject').value.trim();
+  const obtained = parseFloat(document.getElementById('mkObtained').value);
+  const max = parseFloat(document.getElementById('mkMax').value) || 100;
+  const term = document.getElementById('mkTerm').value.trim();
+  if (!subject || isNaN(obtained)) {
+    document.getElementById('mkMsg').textContent = 'Subject and marks are required.';
+    return;
+  }
+  const entry = { id: Date.now().toString(36), reg, subject, obtained, max, term, at: new Date().toISOString() };
+  marks.push(entry);
+  save();
+  log('Marks added: ' + reg + ' / ' + subject);
+  closeMarksModal();
+  refreshMarksTable();
+  toast('Marks saved');
+}
+
+function refreshMarksTable() {
+  const course = document.getElementById('marksCourse')?.value || '';
+  const sem = document.getElementById('marksSem')?.value || '';
+  const q = (document.getElementById('marksSearch')?.value || '').toLowerCase();
+  let list = marks.slice().reverse();
+  if (course || sem) {
+    const regs = new Set(students.filter(s => (!course || s.course === course) && (!sem || s.sem === sem)).map(s => s.reg));
+    list = list.filter(m => regs.has(m.reg));
+  }
+  if (q) {
+    list = list.filter(m => {
+      const s = students.find(x => x.reg === m.reg);
+      return (m.reg + ' ' + (s?.name || '') + ' ' + m.subject).toLowerCase().includes(q);
+    });
+  }
+  const tbody = document.getElementById('marksTable');
+  if (!list.length) {
+    tbody.innerHTML = '<tr><td colspan="8" class="empty">No marks recorded</td></tr>';
+    return;
+  }
+  tbody.innerHTML = list.map(m => {
+    const s = students.find(x => x.reg === m.reg);
+    const pct = m.max ? Math.round((m.obtained / m.max) * 100) : 0;
+    return `<tr>
+      <td>${esc(m.reg)}</td>
+      <td>${esc(s?.name || '—')}</td>
+      <td>${esc(m.subject)}${m.term ? ' <small style="color:#6b7f9e">(' + esc(m.term) + ')</small>' : ''}</td>
+      <td>${m.obtained}</td>
+      <td>${m.max}</td>
+      <td>${pct}%</td>
+      <td><b>${gradeOf(pct)}</b></td>
+      <td><button class="btn danger sm" onclick="deleteMark('${m.id}')">Del</button></td>
+    </tr>`;
+  }).join('');
+}
+
+function deleteMark(id) {
+  if (!confirm('Delete this mark entry?')) return;
+  marks = marks.filter(m => m.id !== id);
+  save();
+  refreshMarksTable();
+  toast('Mark entry deleted', 'warn');
+}
+
+function renderStudentMarks() {
+  const list = marks.filter(m => m.reg === currentStudent).reverse();
+  const tbody = document.getElementById('stuMarksTable');
+  if (!list.length) {
+    tbody.innerHTML = '<tr><td colspan="5" class="empty">No marks yet</td></tr>';
+    return;
+  }
+  tbody.innerHTML = list.map(m => {
+    const pct = m.max ? Math.round((m.obtained / m.max) * 100) : 0;
+    return `<tr><td>${esc(m.subject)}${m.term ? ' <small>(' + esc(m.term) + ')</small>' : ''}</td><td>${m.obtained}</td><td>${m.max}</td><td>${pct}%</td><td><b>${gradeOf(pct)}</b></td></tr>`;
+  }).join('');
+}
+
+/* ============================================================
+   Fees
+   ============================================================ */
+function refreshFeesTable() {
+  const q = (document.getElementById('feeSearch')?.value || '').toLowerCase();
+  const st = document.getElementById('feeFilter')?.value || '';
+  let list = students.slice();
+  if (q) list = list.filter(s => (s.reg + ' ' + s.name).toLowerCase().includes(q));
+  if (st) list = list.filter(s => (fees[s.reg]?.status || 'pending') === st);
+
+  const tbody = document.getElementById('feesTable');
+  tbody.innerHTML = list.map(s => {
+    const f = fees[s.reg] || { amount: 0, status: 'pending', due: '' };
+    return `<tr>
+      <td>${esc(s.reg)}</td>
+      <td>${esc(s.name || '—')}</td>
+      <td>${esc(s.course || '—')}</td>
+      <td>₹ ${Number(f.amount || 0).toLocaleString('en-IN')}</td>
+      <td><span class="badge ${f.status || 'pending'}">${f.status || 'pending'}</span></td>
+      <td>${esc(f.due || '—')}</td>
+      <td><button class="btn secondary sm" onclick="openFeeEdit('${encodeURIComponent(s.reg)}')">Edit</button></td>
+    </tr>`;
+  }).join('') || '<tr><td colspan="7" class="empty">No students</td></tr>';
+}
+
+function openFeeEdit(r) {
+  r = decodeURIComponent(r);
+  feeEditReg = r;
+  const s = students.find(x => x.reg === r);
+  const f = fees[r] || { amount: 25000, status: 'pending', due: '' };
+  document.getElementById('feeStuName').textContent = (s?.name || r) + ' (' + r + ')';
+  document.getElementById('feeAmount').value = f.amount || 0;
+  document.getElementById('feeStatus').value = f.status || 'pending';
+  document.getElementById('feeDue').value = f.due || '';
+  document.getElementById('feeModal').classList.remove('hidden');
+}
+
+function closeFeeModal() { document.getElementById('feeModal').classList.add('hidden'); feeEditReg = null; }
+
+function saveFee() {
+  if (!feeEditReg) return;
+  fees[feeEditReg] = {
+    amount: parseFloat(document.getElementById('feeAmount').value) || 0,
+    status: document.getElementById('feeStatus').value,
+    due: document.getElementById('feeDue').value
+  };
+  save();
+  log('Fee updated: ' + feeEditReg + ' → ' + fees[feeEditReg].status);
+  closeFeeModal();
+  refreshFeesTable();
+  toast('Fee record updated');
+}
+
+function renderStudentFees() {
+  const f = fees[currentStudent] || { amount: 0, status: 'pending', due: '' };
+  document.getElementById('stuFeeCard').innerHTML = `
+    <div class="stats" style="grid-template-columns:repeat(3,1fr)">
+      <div class="stat"><small>AMOUNT</small><b style="font-size:20px">₹ ${Number(f.amount || 0).toLocaleString('en-IN')}</b></div>
+      <div class="stat"><small>STATUS</small><b style="font-size:18px"><span class="badge ${f.status || 'pending'}">${f.status || 'pending'}</span></b></div>
+      <div class="stat"><small>DUE DATE</small><b style="font-size:16px">${esc(f.due || 'Not set')}</b></div>
+    </div>
+    <p style="color:var(--muted);font-size:13px;margin-top:14px">Contact the accounts office for payment details. Status is updated by faculty.</p>
+  `;
+}
+
+/* ============================================================
+   Notices
+   ============================================================ */
+function publishNotice() {
+  const title = document.getElementById('noticeTitle').value.trim();
+  const body = document.getElementById('noticeBody').value.trim();
+  if (!title || !body) { toast('Title and message required', 'err'); return; }
+  notices.unshift({ id: Date.now().toString(36), title, body, at: new Date().toISOString() });
+  save();
+  log('Notice published: ' + title);
+  clearNoticeForm();
+  renderNotices();
+  toast('Notice published');
+}
+
+function clearNoticeForm() {
+  document.getElementById('noticeTitle').value = '';
+  document.getElementById('noticeBody').value = '';
+}
+
+function renderNotices() {
+  const el = document.getElementById('noticeList');
+  if (!notices.length) {
+    el.innerHTML = '<div class="empty">No notices yet</div>';
+    return;
+  }
+  el.innerHTML = notices.map(n => `
+    <div class="notice-card">
+      <h4>${esc(n.title)}</h4>
+      <p>${esc(n.body)}</p>
+      <div class="meta">${new Date(n.at).toLocaleString()}
+        <button class="btn danger sm" style="float:right" onclick="deleteNotice('${n.id}')">Delete</button>
+      </div>
+    </div>
+  `).join('');
+}
+
+function deleteNotice(id) {
+  if (!confirm('Delete this notice?')) return;
+  notices = notices.filter(n => n.id !== id);
+  save();
+  renderNotices();
+  toast('Notice deleted', 'warn');
+}
+
+function renderStudentNotices() {
+  const el = document.getElementById('stuNoticeList');
+  if (!notices.length) {
+    el.innerHTML = '<div class="empty panel">No notices at the moment</div>';
+    return;
+  }
+  el.innerHTML = notices.map(n => `
+    <div class="notice-card">
+      <h4>${esc(n.title)}</h4>
+      <p>${esc(n.body)}</p>
+      <div class="meta">${new Date(n.at).toLocaleString()}</div>
+    </div>
+  `).join('');
+}
+
+/* ============================================================
+   Courses
+   ============================================================ */
+function addCourse() {
+  const n = document.getElementById('newCourse').value.trim();
+  if (!n) return;
+  if (courses.includes(n)) { toast('Course already exists', 'warn'); return; }
+  courses.push(n);
+  save();
+  document.getElementById('newCourse').value = '';
+  fillSelects();
+  renderCourses();
+  log('Course added: ' + n);
+  toast('Course added');
+}
+
+function renameCourse(i) {
+  const n = prompt('New course name:', courses[i]);
+  if (n && n.trim()) {
+    const old = courses[i];
+    courses[i] = n.trim();
+    students.forEach(s => { if (s.course === old) s.course = n.trim(); });
+    save();
+    fillSelects();
+    renderCourses();
+    log('Course renamed: ' + old + ' → ' + n.trim());
+  }
+}
+
+function removeCourse(i) {
+  if (!confirm('Delete course "' + courses[i] + '"?')) return;
+  const name = courses[i];
+  courses.splice(i, 1);
+  save();
+  fillSelects();
+  renderCourses();
+  log('Course removed: ' + name);
+  toast('Course removed', 'warn');
+}
+
+function renderCourses() {
+  const e = document.getElementById('courseList');
+  if (!e) return;
+  e.innerHTML = courses.map((c, i) => `
+    <div style="display:flex;justify-content:space-between;align-items:center;padding:12px 16px;border-bottom:1px solid #182641">
+      <span>${esc(c)}</span>
+      <span>
+        <button class="btn secondary sm" onclick="renameCourse(${i})">Rename</button>
+        <button class="btn danger sm" onclick="removeCourse(${i})">Delete</button>
+      </span>
+    </div>
+  `).join('');
+}
+
+/* ============================================================
+   Activity log
+   ============================================================ */
+function renderFullLog() {
+  const el = document.getElementById('fullLog');
+  el.innerHTML = activity.length
+    ? activity.map(a => `<div class="log-item"><span class="time">${new Date(a.t).toLocaleString()}</span><span class="act">${esc(a.msg)}</span></div>`).join('')
+    : '<div class="empty">No activity recorded</div>';
+}
+
+function clearActivityLog() {
+  if (!confirm('Clear activity log?')) return;
+  activity = [];
+  save();
+  renderFullLog();
+  toast('Activity log cleared');
+}
+
+/* ============================================================
+   Backup / Recovery
+   ============================================================ */
+function refreshBackupUI() {
+  document.getElementById('bkStudents').textContent = students.length;
+  const bak = readJSON(KEYS.backup, null);
+  document.getElementById('bkTime').textContent = bak?.savedAt ? new Date(bak.savedAt).toLocaleString() : '—';
+  const slots = readJSON(KEYS.slots, []);
+  document.getElementById('bkSlots').textContent = slots.length;
+  document.getElementById('slotList').innerHTML = slots.length
+    ? slots.map((s, i) => `<div class="log-item"><span class="time">${new Date(s.at).toLocaleString()}</span><span class="act">${s.count} students ${i === 0 ? '(latest recovery snapshot)' : ''}</span></div>`).join('')
+    : '<div class="empty">No recovery slots yet — data will appear after first save</div>';
+}
+
+function downloadBackup() {
+  save();
+  const data = {
+    version: 2,
+    app: 'NEXUS Advanced CMS',
+    savedAt: new Date().toISOString(),
+    students, courses, attendance, marks, fees, notices, activity, settings
+  };
+  const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'nexus-advanced-backup-' + new Date().toISOString().slice(0, 10) + '.json';
+  a.click();
+  setTimeout(() => URL.revokeObjectURL(a.href), 1000);
+  log('Full backup downloaded');
+  toast('Backup downloaded');
+}
+
+function restoreBackupFile(input) {
+  const file = input.files && input.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = () => {
+    try {
+      const data = JSON.parse(reader.result);
+      if (!Array.isArray(data.students) || !Array.isArray(data.courses)) throw new Error('Invalid');
+      if (!confirm('Restore will REPLACE all current data. Continue?')) { input.value = ''; return; }
+      students = data.students;
+      courses = data.courses;
+      attendance = data.attendance || {};
+      marks = data.marks || [];
+      fees = data.fees || {};
+      notices = data.notices || [];
+      if (Array.isArray(data.activity)) activity = data.activity;
+      if (data.settings && data.settings.password && data.settings.password !== '***') {
+        settings = { ...DEFAULT_SETTINGS, ...data.settings };
+      }
+      save();
+      fillSelects();
+      refreshOverview();
+      log('Backup restored from file');
+      toast('Backup restored successfully');
+      refreshBackupUI();
+    } catch (e) {
+      toast('Invalid NEXUS backup file', 'err');
+    }
+    input.value = '';
+  };
+  reader.readAsText(file);
+}
+
+/* ============================================================
+   Settings
+   ============================================================ */
+function changePassword() {
+  const cur = document.getElementById('curPass').value;
+  const n1 = document.getElementById('newPass').value;
+  const n2 = document.getElementById('newPass2').value;
+  const msg = document.getElementById('passMsg');
+  if (cur !== settings.password) { msg.className = 'msg'; msg.textContent = 'Current password is wrong.'; return; }
+  if (n1.length < 6) { msg.className = 'msg'; msg.textContent = 'New password must be at least 6 characters.'; return; }
+  if (n1 !== n2) { msg.className = 'msg'; msg.textContent = 'New passwords do not match.'; return; }
+  settings.password = n1;
+  save();
+  log('Admin password changed');
+  msg.className = 'msg ok';
+  msg.textContent = 'Password updated.';
+  document.getElementById('curPass').value = '';
+  document.getElementById('newPass').value = '';
+  document.getElementById('newPass2').value = '';
+  toast('Password changed');
+}
+
+function saveRegPrefix() {
+  settings.regPrefix = document.getElementById('regPrefix').value.trim() || 'NEXUS';
+  save();
+  toast('Registration prefix saved');
+}
+
+function wipeAllData() {
+  if (!confirm('This will erase ALL local NEXUS data. Are you sure?')) return;
+  if (!confirm('Final confirmation: download a backup first if needed. Proceed to wipe?')) return;
+  Object.values(KEYS).forEach(k => localStorage.removeItem(k));
+  students = []; courses = DEFAULT_COURSES.slice(); attendance = {}; marks = []; fees = {}; notices = []; activity = [];
+  settings = { ...DEFAULT_SETTINGS };
+  save();
+  log('All data wiped');
+  toast('All local data wiped', 'err');
+  refreshOverview();
+  refreshBackupUI();
+}
+
+/* ============================================================
+   CSV import / export
+   ============================================================ */
+function exportCSV() {
+  const rows = [['Registration','Roll','Name','Age','Course','Semester','Email','Phone','Gender','City','Blood','Guardian','Address','Status']];
+  students.forEach(s => rows.push([s.reg,s.roll,s.name,s.age,s.course,s.sem,s.email,s.phone,s.gender,s.city,s.blood,s.guardian,s.address,s.status]));
+  const csv = rows.map(r => r.map(v => `"${String(v ?? '').replace(/"/g, '""')}"`).join(',')).join('\n');
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(new Blob([csv], { type: 'text/csv' }));
+  a.download = 'nexus-students.csv';
+  a.click();
+  toast('CSV exported');
+}
+
+function importCSV(input) {
+  const file = input.files && input.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = () => {
+    try {
+      const lines = reader.result.split(/\r?\n/).filter(Boolean);
+      if (lines.length < 2) throw new Error('Empty');
+      let added = 0;
+      for (let i = 1; i < lines.length; i++) {
+        const cols = lines[i].match(/("([^"]|"")*"|[^,]*)/g).map(c => c.replace(/^"|"$/g, '').replace(/""/g, '"'));
+        const reg = (cols[0] || '').trim();
+        if (!reg) continue;
+        if (students.some(s => s.reg.toLowerCase() === reg.toLowerCase())) continue;
+        students.push({
+          reg, roll: cols[1] || '', name: cols[2] || '', age: cols[3] || '',
+          course: cols[4] || courses[0], sem: cols[5] || SEMESTERS[0],
+          email: cols[6] || '', phone: cols[7] || '', gender: cols[8] || 'Prefer not to say',
+          city: cols[9] || '', blood: cols[10] || '', guardian: cols[11] || '',
+          address: cols[12] || '', status: cols[13] || 'active',
+          createdAt: new Date().toISOString()
+        });
+        added++;
+      }
+      save();
+      refreshStudents();
+      log('CSV import: ' + added + ' students added');
+      toast('Imported ' + added + ' new students');
+    } catch (e) {
+      toast('Could not parse CSV', 'err');
+    }
+    input.value = '';
+  };
+  reader.readAsText(file);
+}
+
+/* ============================================================
+   Demo seed
+   ============================================================ */
+function seedDemoData() {
+  if (students.length && !confirm('Add demo students to existing data?')) return;
+  const demoPass = 'student123';
+  const demo = [
+    { reg: 'NEXUS2026001', roll: '001', name: 'Aarav Sharma', age: 19, course: 'BCA', sem: 'Semester 3', email: 'aarav@college.edu', phone: '9876543210', status: 'active', gender: 'Male', city: 'Delhi', blood: 'B+', guardian: 'R. Sharma', address: 'North Campus', password: demoPass },
+    { reg: 'NEXUS2026002', roll: '002', name: 'Diya Patel', age: 20, course: 'BBA', sem: 'Semester 4', email: 'diya@college.edu', phone: '9876543211', status: 'active', gender: 'Female', city: 'Ahmedabad', blood: 'O+', guardian: 'K. Patel', address: 'Hostel B', password: demoPass },
+    { reg: 'NEXUS2026003', roll: '003', name: 'Kabir Singh', age: 21, course: 'BCA', sem: 'Semester 5', email: 'kabir@college.edu', phone: '9876543212', status: 'active', gender: 'Male', city: 'Chandigarh', blood: 'A+', guardian: 'S. Singh', address: 'Sector 17', password: demoPass },
+    { reg: 'NEXUS2026004', roll: '004', name: 'Ananya Reddy', age: 18, course: 'B.Sc', sem: 'Semester 1', email: 'ananya@college.edu', phone: '9876543213', status: 'active', gender: 'Female', city: 'Hyderabad', blood: 'AB+', guardian: 'M. Reddy', address: 'Gachibowli', password: demoPass },
+    { reg: 'NEXUS2026005', roll: '005', name: 'Rohan Mehta', age: 22, course: 'B.Com', sem: 'Semester 6', email: 'rohan@college.edu', phone: '9876543214', status: 'blocked', gender: 'Male', city: 'Mumbai', blood: 'O-', guardian: 'P. Mehta', address: 'Andheri', password: demoPass }
+  ];
+  let added = 0;
+  demo.forEach(d => {
+    if (!students.some(s => s.reg === d.reg)) {
+      students.push({ ...d, createdAt: new Date().toISOString() });
+      fees[d.reg] = { amount: 25000 + Math.floor(Math.random() * 10000), status: d.status === 'blocked' ? 'overdue' : (Math.random() > 0.4 ? 'paid' : 'pending'), due: '2026-12-31' };
+      added++;
+    }
+  });
+  if (!notices.length) {
+    notices.push({ id: 'demo1', title: 'Welcome to NEXUS Advanced', body: 'This is a demo notice. Faculty can publish real announcements that students see instantly.', at: new Date().toISOString() });
+    notices.push({ id: 'demo2', title: 'Mid-semester exams', body: 'Exam schedule will be published next week. Ensure fee clearance before hall ticket generation.', at: new Date().toISOString() });
+  }
+  save();
+  log('Demo data loaded (' + added + ' students)');
+  refreshOverview();
+  refreshStudents();
+  toast('Demo data ready (' + added + ' new students)');
+}
+
+/* ============================================================
+   Init
+   ============================================================ */
+loadAll();
+window.addEventListener('beforeunload', save);
+window.addEventListener('pagehide', save);
+fillSelects();
+
+// Expose for inline handlers (already global in this scope)
+</script>
+</body>
+</html>
